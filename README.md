@@ -1,3 +1,5 @@
+[![Check](https://github.com/ztroop/defang/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/ztroop/defang/actions/workflows/check.yml)
+
 # defang
 
 Yet another defanging tool! Defanging is a reliable way to share suspicious or malicious URLs without endangering the recipient by modifying the URL to be inaccessible.
@@ -17,7 +19,7 @@ OPTIONS:
     -V, --version         Print version information
 ```
 
-## Example Scenario
+## Demonstration
 
 ```sh
 $ defang -d http://malware.example.com
