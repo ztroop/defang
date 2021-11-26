@@ -1,6 +1,6 @@
 use clap::{crate_authors, crate_version, App, Arg};
 
-const SUBS: [(&str, &str); 4] = [
+const SUBSTITUTIONS: [(&str, &str); 4] = [
     (".", "[.]"),
     ("@", "[at]"),
     ("ftp", "fxp"),
@@ -12,26 +12,23 @@ enum Order {
     Reversed,
 }
 
-fn reverse_tuple<T, U>(pair: (T, U)) -> (U, T) {
-    let (first, second) = pair;
-    (second, first)
-}
-
-fn replace(mut url: String, s: [(&str, &str); 4]) -> String {
-    for item in s.iter() {
-        if url.contains(item.0) {
-            url = url.replace(item.0, item.1);
+fn fang(url: &str, order: Order) -> String {
+    let mut url = url.trim().to_owned();
+    for item in SUBSTITUTIONS.iter() {
+        match order {
+            Order::Normal => {
+                if url.contains(item.0) {
+                    url = url.replace(item.0, item.1);
+                }
+            }
+            Order::Reversed => {
+                if url.contains(item.1) {
+                    url = url.replace(item.1, item.0);
+                }
+            }
         }
     }
     url
-}
-
-fn fang(url: &str, order: Order) -> String {
-    let url = url.trim().to_owned();
-    match order {
-        Order::Reversed => replace(url, SUBS.map(|x| reverse_tuple(x))),
-        Order::Normal => replace(url, SUBS),
-    }
 }
 
 fn main() {
@@ -59,14 +56,11 @@ fn main() {
         )
         .get_matches();
 
-    match matches.value_of("defang") {
-        Some(i) => println!("{}", fang(i, Order::Normal)),
-        None => (),
+    if let Some(i) = matches.value_of("defang") {
+        println!("{}", fang(i, Order::Normal))
     };
-
-    match matches.value_of("refang") {
-        Some(i) => println!("{}", fang(i, Order::Reversed)),
-        None => (),
+    if let Some(i) = matches.value_of("refang") {
+        println!("{}", fang(i, Order::Reversed))
     };
 }
 
@@ -99,11 +93,5 @@ mod tests {
 
         let refanged_email: String = fang("bad[.]actor[at]example[.]com", Order::Reversed);
         assert_eq!(refanged_email, "bad.actor@example.com".to_owned())
-    }
-
-    #[test]
-    fn test_reverse_tuple() {
-        assert_eq!(reverse_tuple((0, 1)), (1, 0));
-        assert_eq!(reverse_tuple(("foo", "bar")), ("bar", "foo"))
     }
 }
