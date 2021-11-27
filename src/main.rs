@@ -1,10 +1,10 @@
 use clap::{crate_authors, crate_version, App, Arg};
 
-const SUBSTITUTIONS: [(&str, &str); 4] = [
-    (".", "[.]"),
-    ("@", "[at]"),
-    ("ftp", "fxp"),
-    ("http", "hxxp"),
+const SUBSTITUTIONS: [[&str; 2]; 4] = [
+    [".", "[.]"],
+    ["@", "[at]"],
+    ["ftp", "fxp"],
+    ["http", "hxxp"],
 ];
 
 enum Order {
@@ -12,21 +12,19 @@ enum Order {
     Reversed,
 }
 
+fn replace(url: &mut String, x: usize, y: usize) {
+    for item in SUBSTITUTIONS.iter() {
+        if url.contains(item[x]) {
+            *url = url.replace(item[x], item[y]);
+        }
+    }
+}
+
 fn fang(url: &str, order: Order) -> String {
     let mut url = url.trim().to_owned();
-    for item in SUBSTITUTIONS.iter() {
-        match order {
-            Order::Normal => {
-                if url.contains(item.0) {
-                    url = url.replace(item.0, item.1);
-                }
-            }
-            Order::Reversed => {
-                if url.contains(item.1) {
-                    url = url.replace(item.1, item.0);
-                }
-            }
-        }
+    match order {
+        Order::Normal => replace(&mut url, 0_usize, 1_usize),
+        Order::Reversed => replace(&mut url, 1_usize, 0_usize),
     }
     url
 }
